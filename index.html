@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript代码混淆工具</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 javascript-obfuscator 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator/dist/index.browser.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>JavaScript代码混淆工具</h1>
+        
+        <div class="editor-container">
+            <div class="input-section">
+                <h3>输入代码:</h3>
+                <textarea id="input" placeholder="在此输入JavaScript代码..."></textarea>
+            </div>
+            
+            <div class="output-section">
+                <h3>混淆结果:</h3>
+                <textarea id="output" readonly></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="options-container">
+                <div class="options-group">
+                    <h4>基本设置</h4>
+                    <label>
+                        <select id="optionsPreset">
+                            <option value="default" selected>默认预设</option>
+                            <option value="low-obfuscation">低混淆</option>
+                            <option value="medium-obfuscation">中等混淆</option>
+                            <option value="high-obfuscation">高混淆</option>
+                        </select>
+                        混淆预设
+                    </label>
+                    <label>
+                        <input type="checkbox" id="compact" checked> 
+                        压缩代码
+                    </label>
+                    <label>
+                        <input type="checkbox" id="simplify" checked> 
+                        简化代码
+                    </label>
+                    <label>
+                        <input type="checkbox" id="selfDefending"> 
+                        自我保护
+                    </label>
+                    <label>
+                        <input type="number" id="seed" value="0" min="0">
+                        随机种子
+                    </label>
+                    <label>
+                        <select id="target">
+                            <option value="browser" selected>浏览器</option>
+                            <option value="node">Node.js</option>
+                            <option value="browser-no-eval">浏览器(无eval)</option>
+                            <option value="node-no-eval">Node.js(无eval)</option>
+                        </select>
+                        目标环境
+                    </label>
+                </div>
+
+                <div class="options-group">
+                    <h4>字符串数组设置</h4>
+                    <label>
+                        <input type="checkbox" id="stringArray" checked> 
+                        启用字符串数组
+                    </label>
+                    <label>
+                        <input type="checkbox" id="stringArrayRotate" checked> 
+                        字符串数组轮转
+                    </label>
+                    <label>
+                        <input type="checkbox" id="stringArrayShuffle" checked> 
+                        字符串数组随机化
+                    </label>
+                    <label>
+                        字符串数组编码:
+                        <select id="stringArrayEncoding">
+                            <option value="none">无</option>
+                            <option value="base64" selected>Base64</option>
+                            <option value="rc4">RC4</option>
+                        </select>
+                    </label>
+                    <label>
+                        字符串数组阈值:
+                        <input type="range" id="stringArrayThreshold" min="0" max="1" step="0.05" value="0.75">
+                        <span id="stringArrayThresholdValue">0.75</span>
+                    </label>
+                    <label>
+                        字符串数组调用转换阈值:
+                        <input type="range" id="stringArrayCallsTransformThreshold" min="0" max="1" step="0.05" value="0.5">
+                        <span id="stringArrayCallsTransformThresholdValue">0.5</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="stringArrayCallsTransform" checked> 
+                        启用字符串数组调用转换
+                    </label>
+                    <label>
+                        字符串数组包装器数量:
+                        <input type="number" id="stringArrayWrappersCount" value="1" min="1">
+                    </label>
+                    <label>
+                        <select id="stringArrayWrappersType">
+                            <option value="variable" selected>变量</option>
+                            <option value="function">函数</option>
+                        </select>
+                        字符串数组包装器类型
+                    </label>
+                </div>
+
+                <div class="options-group">
+                    <h4>代码转换设置</h4>
+                    <label>
+                        <input type="checkbox" id="numbersToExpressions"> 
+                        数字表达式转换
+                    </label>
+                    <label>
+                        <input type="checkbox" id="splitStrings"> 
+                        拆分字符串
+                    </label>
+                    <label>
+                        字符串拆分长度:
+                        <input type="number" id="splitStringsChunkLength" value="10" min="1">
+                    </label>
+                    <label>
+                        <input type="checkbox" id="transformObjectKeys"> 
+                        转换对象键
+                    </label>
+                    <label>
+                        <input type="checkbox" id="unicodeEscapeSequence"> 
+                        Unicode转义序列
+                    </label>
+                </div>
+
+                <div class="options-group">
+                    <h4>控制流设置</h4>
+                    <label>
+                        <input type="checkbox" id="controlFlowFlattening"> 
+                        控制流扁平化
+                    </label>
+                    <label>
+                        控制流扁平化阈值:
+                        <input type="range" id="controlFlowFlatteningThreshold" min="0" max="1" step="0.05" value="0.75">
+                        <span id="controlFlowFlatteningThresholdValue">0.75</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="deadCodeInjection"> 
+                        注入死代码
+                    </label>
+                    <label>
+                        死代码注入阈值:
+                        <input type="range" id="deadCodeInjectionThreshold" min="0" max="1" step="0.05" value="0.4">
+                        <span id="deadCodeInjectionThresholdValue">0.4</span>
+                    </label>
+                </div>
+
+                <div class="options-group">
+                    <h4>标识符设置</h4>
+                    <label>
+                        <select id="identifierNamesGenerator">
+                            <option value="hexadecimal" selected>十六进制</option>
+                            <option value="mangled">混淆</option>
+                            <option value="mangled-shuffled">混淆并打乱</option>
+                        </select>
+                        标识符名称生成器
+                    </label>
+                    <label>
+                        标识符前缀:
+                        <input type="text" id="identifiersPrefix" value="">
+                    </label>
+                    <label>
+                        <input type="checkbox" id="renameGlobals"> 
+                        重命名全局变量
+                    </label>
+                    <label>
+                        <input type="checkbox" id="renameProperties"> 
+                        重命名属性
+                    </label>
+                    <label>
+                        <select id="renamePropertiesMode">
+                            <option value="safe" selected>安全模式</option>
+                            <option value="unsafe">非安全模式</option>
+                        </select>
+                        属性重命名模式
+                    </label>
+                </div>
+
+                <div class="options-group">
+                    <h4>调试保护</h4>
+                    <label>
+                        <input type="checkbox" id="debugProtection"> 
+                        调试保护
+                    </label>
+                    <label>
+                        调试保护间隔:
+                        <input type="number" id="debugProtectionInterval" value="0" min="0">
+                    </label>
+                    <label>
+                        <input type="checkbox" id="disableConsoleOutput"> 
+                        禁用控制台输出
+                    </label>
+                    <label>
+                        <input type="checkbox" id="selfDefending"> 
+                        自我保护
+                    </label>
+                </div>
+
+                <div class="options-group">
+                    <h4>域名锁定</h4>
+                    <label>
+                        域名列表(逗号分隔):
+                        <input type="text" id="domainLock" placeholder="example.com,test.com">
+                    </label>
+                    <label>
+                        重定向URL:
+                        <input type="text" id="domainLockRedirectUrl" value="about:blank">
+                    </label>
+                </div>
+            </div>
+            <div class="buttons">
+                <button id="obfuscateBtn">混淆代码</button>
+                <button id="copyBtn">复制结果</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
